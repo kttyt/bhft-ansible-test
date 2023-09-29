@@ -76,9 +76,9 @@ def main():
                     # Find the next partition after the partition with root_uuid
                     partitions = sorted(device['partitions'].keys())
                     next_partition = find_next_element(partition, partitions)
-                    size = device['partitions'][next_partition]['size']
                     if next_partition is None:
                         module.fail_json(msg='Next partition not found')
+                    size = device['partitions'][next_partition]['size']
                     break
     else:
         module.fail_json(msg='Root mount not found in ansible_facts')
