@@ -12,7 +12,7 @@ all:
         partition:
           encrypted_volume_name: "second_vol"
           mount_point: /mnt/encrypted_vol
-          encrypt_device: /dev/xvda14
+          # encrypt_device will be calculated automatically
+          # encrypt_device: /dev/xvda14
           encrypted_volume_fstype: ext2
-          luks_type: luks1
           keyfile: luks.key
