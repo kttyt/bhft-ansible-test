@@ -28,17 +28,17 @@ notes:
 '''
 
 EXAMPLES = '''
-- name: Get system information using ansible_facts
+- name: Find volume using ansible_facts
   hosts: localhost
   gather_facts: yes
   tasks:
     - name: Find the next partition after the root partition
-        find_volume_after_root:
-            ansible_facts: "{{ ansible_facts }}"
-            register: result
+      find_volume_after_root:
+          ansible_facts: "{{ ansible_facts }}"
+          register: result
     - name: Print the result
-        debug:
-            var: result
+      debug:
+          var: result
 '''
 
 
