@@ -1,0 +1,13 @@
+---
+# Name of the resulting encrypted volume
+encrypted_volume_name: "encrypted_volume"
+encrypted_volume_fstype: "ext4"
+# Type of the LUKS encryption (luks1 or luks2); luks2 used about 16Mb for the service data
+luks_type: "luks2"
+# Path to the device to encrypt
+encrypt_device: /dev/xvdb
+# Path to the encryption keyfile
+keyfile_path: "/etc/cryptsetup-keys.d/{{ encrypted_volume_name }}.key"
+
+mount_point:
+keyfile_content:

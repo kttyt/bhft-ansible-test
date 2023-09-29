@@ -1,0 +1,5 @@
+---
+- import_playbook: encrypt_devices.yaml
+- import_playbook: kernel_parameters.yaml
+- import_playbook: rename_interface.yaml
+- import_playbook: information.yaml

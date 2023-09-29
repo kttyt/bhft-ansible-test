@@ -1,0 +1,27 @@
+- name: Encrypting the second disk in the system
+  hosts: all
+  gather_facts: false
+  roles:
+    - role: device_encryption
+      vars:
+        encrypted_volume_name: "{{ encrypt_devices.disk.encrypted_volume_name }}"
+        mount_point: "{{ encrypt_devices.disk.mount_point }}"
+        encrypt_device: "{{ encrypt_devices.disk.encrypt_device }}"
+        keyfile_content: "{{ lookup('file', encrypt_devices.disk.keyfile ) }}"
+      tags:
+        - first_device_encryption
+# - name: Encrypting partition on the first disk in the system
+#   hosts: all
+#   gather_facts: false
+#   roles:
+#     - role: device_encryption
+#       vars:
+#         encrypted_volume_name: "{{ encrypt_devices.partition.encrypted_volume_name }}"
+#         mount_point: "{{ encrypt_devices.partition.mount_point }}"
+#         encrypt_device: "{{ encrypt_devices.partition.encrypt_device }}"
+#         keyfile_content: "{{ lookup('file', encrypt_devices.partition.keyfile ) }}"
+#         encrypted_volume_fstype: ext2
+#         luks_type: luks1 # luks2 requiers at lest >16Mb for the service data
+#       tags:
+#         - second_device_encryption
+#         - never # Due dev/xvda14 is partition with grub_boot flag, it can't be encrypted

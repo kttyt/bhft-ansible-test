@@ -1,0 +1,57 @@
+---
+# tasks file for disk_encryption
+- name: Ensure key is present
+  assert:
+    that:
+      - keyfile_content is defined
+      - keyfile_content | length > 0
+    msg: "keyfile_content must be defined and not empty"
+
+- name: Ensure directory for keyfile exists
+  file:
+    path: "{{ keyfile_path | dirname }}"
+    state: directory
+
+- name: Add keyfile to remote host
+  copy:
+    content: "{{ keyfile_content }}"
+    dest: "{{ keyfile_path }}"
+    mode: 0400
+
+- name: Encrypt specified device
+  community.crypto.luks_device:
+    device: "{{ encrypt_device }}"
+    keysize: 512
+    type: "{{ luks_type }}"
+    keyfile: "{{ keyfile_path }}"
+    state: present
+  notify: restart systemd-cryptsetup
+
+- name: Add encrypted device to crypttab
+  lineinfile:
+    path: /etc/crypttab
+    line: "{{ encrypted_volume_name }}  {{ encrypt_device }}  {{ keyfile_path }}  luks"
+    state: present
+  notify: restart systemd-cryptsetup
+
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: Create filesystem on encrypted disk
+  filesystem:
+    fstype: "{{ encrypted_volume_fstype }}"
+    dev: /dev/mapper/{{ encrypted_volume_name }}
+
+- name: Create mount point for encrypted disk
+  file:
+    path: "{{ mount_point }}"
+    state: directory
+  when: mount_point | default("") | length > 0
+
+- name: Add encrypted disk to fstab
+  lineinfile:
+    path: /etc/fstab
+    line: "/dev/mapper/{{ encrypted_volume_name }}  {{ mount_point }}  {{ encrypted_volume_fstype }}  defaults  0  2"
+    state: present
+  when: mount_point | default("") | length > 0
+  notify: mount disks

@@ -1,0 +1,16 @@
+- name: Show resulted information about the system
+  hosts: all
+  tasks:
+    - name: Gather CPUs Information
+      ansible.builtin.slurp:
+        src: /proc/cpuinfo
+      register: cpu_info_raw
+
+    - name: CPU and Hyper-Threading Information
+      debug:
+        msg:
+          - "CPU Model: {{ cpu_info | regex_findall('model name.*') |map('regex_replace', 'model name.*: ', '') | first }}"
+          - "CPU Cores: {{ ansible_facts['processor_vcpus'] }}"
+          - "Hyper-Threading: {{ 'enabled' if ansible_facts['processor_threads_per_core'] > 1 else 'disabled' }}"
+      vars:
+        cpu_info: "{{ cpu_info_raw.content|b64decode }}"

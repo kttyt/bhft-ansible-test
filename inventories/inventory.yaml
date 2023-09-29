@@ -1,0 +1,18 @@
+all:
+  hosts:
+    test:
+      ansible_host: 54.93.174.67
+      ansible_user: ubuntu
+      encrypt_devices:
+        disk:
+          encrypted_volume_name: "first_vol"
+          mount_point: /mnt/encrypted_disk
+          encrypt_device: /dev/xvdb
+          keyfile: luks.key
+        partition:
+          encrypted_volume_name: "second_vol"
+          mount_point: /mnt/encrypted_vol
+          encrypt_device: /dev/xvda14
+          encrypted_volume_fstype: ext2
+          luks_type: luks1
+          keyfile: luks.key
