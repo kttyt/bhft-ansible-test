@@ -19,7 +19,7 @@
         ansible_facts: "{{ ansible_facts }}"
       register: volume
       tags: second_device_encryption
-    - name: Display information about the renamed interface
+    - name: Display information about found volume
       debug:
         var: volume
       tags: second_device_encryption
