@@ -52,6 +52,7 @@ def find_next_element(search_string, xs):
     else:
         return None
 
+
 def main():
     module = AnsibleModule(
         argument_spec={
@@ -65,7 +66,8 @@ def main():
     if not ansible_facts:
         module.fail_json(msg='ansible_facts is empty')
 
-    root_mount = next((x for x in ansible_facts['mounts'] if x['mount'] == '/'), None)
+    root_mount = next(
+        (x for x in ansible_facts['mounts'] if x['mount'] == '/'), None)
     if root_mount:
         # Get the UUID of the mount '/'
         root_uuid = root_mount['uuid']
@@ -82,7 +84,6 @@ def main():
                     break
     else:
         module.fail_json(msg='Root mount not found in ansible_facts')
-
 
     result = {
         'volume_name': next_partition,
