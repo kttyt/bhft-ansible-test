@@ -1,5 +1,72 @@
 ---
-- import_playbook: encrypt_devices.yaml
-- import_playbook: kernel_parameters.yaml
-- import_playbook: rename_interface.yaml
-- import_playbook: information.yaml
+- name: Encrypting the second disk in the system
+  hosts: all
+  gather_facts: false
+  roles:
+    - role: device_encryption
+      vars:
+        encrypted_volume_name: "{{ encrypt_devices.disk.encrypted_volume_name }}"
+        mount_point: "{{ encrypt_devices.disk.mount_point }}"
+        encrypt_device: "{{ encrypt_devices.disk.encrypt_device }}"
+        keyfile_content: "{{ lookup('file', encrypt_devices.disk.keyfile ) }}"
+      tags:
+        - first_device_encryption
+        - encryption
+
+- name: Encrypting partition on the first disk in the system
+  hosts: all
+  gather_facts: true
+  pre_tasks:
+    - name: Find volume after the root partition
+      find_volume_after_root:
+        ansible_facts: "{{ ansible_facts }}"
+      register: volume
+      tags:
+        - second_device_encryption
+        - encryption
+    - name: Display information about found volume
+      debug:
+        var: volume
+      tags:
+        - second_device_encryption
+        - encryption
+  roles:
+    - role: device_encryption
+      vars:
+        encrypt_device: "/dev/{{ volume.volume_name }}"
+        luks_type: "{{ 'luks1' if (volume.size|human_to_bytes) < ('20.0 MB'|human_to_bytes) else 'luks2' }}"
+
+        encrypted_volume_name: "{{ encrypt_devices.partition.encrypted_volume_name }}"
+        mount_point: "{{ encrypt_devices.partition.mount_point }}"
+        keyfile_content: "{{ lookup('file', encrypt_devices.partition.keyfile ) }}"
+        encrypted_volume_fstype: ext2
+      tags:
+        - second_device_encryption
+        - encryption
+        # - never # Due /dev/xvda14 is partition with grub_boot flag, it can't be encrypted
+
+- name: Setup kernel parameters and network interfaces
+  hosts: all
+  roles:
+    - role: kernel_parameters
+      tags: kernel_parameters
+    - role: network_configure
+      tags: network_configure
+
+- name: Show resulted information about the system
+  hosts: all
+  tasks:
+    - name: Gather CPUs Information
+      ansible.builtin.slurp:
+        src: /proc/cpuinfo
+      register: cpu_info_raw
+      tags: cpu_info
+    - name: CPU and Hyper-Threading Information
+      debug:
+        msg:
+          - "CPU Model: {{ cpu_info | regex_findall('model name.*') |map('regex_replace', 'model name.*: ', '') | first }}"
+          - "CPU Cores: {{ ansible_facts['processor_vcpus'] }}"
+          - "Hyper-Threading: {{ 'enabled' if ansible_facts['processor_threads_per_core'] > 1 else 'disabled' }}"
+      vars:
+        cpu_info: "{{ cpu_info_raw.content|b64decode }}"
+      tags: cpu_info

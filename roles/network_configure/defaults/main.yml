@@ -1,0 +1,7 @@
+---
+# variable flag for falling if there is more than one interface in the system
+# because we should use active interface and it could be cnanged if we will use another interface for ssh connection
+# if you want to skip this check, set this variable to true
+skip_interface_check: false
+netplan_templates:
+  - 01-netcfg.yaml

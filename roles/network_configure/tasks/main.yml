@@ -1,0 +1,36 @@
+---
+- name: Check if system is Ubuntu
+  assert:
+    that:
+      - ansible_facts['distribution'] == 'Ubuntu'
+      - ansible_facts['distribution_version'] == '20.04'
+    msg: "This playbook is only for Ubuntu"
+- name: Check if there is more than one interface except lo
+  assert:
+    that:
+      - ansible_interfaces|reject('match', 'lo')|length == 1 or skip_interface_check
+    msg: "There is more than one interface in the system"
+- name: Create netplan config files
+  template:
+    src: "{{ item }}"
+    dest: "/etc/netplan/{{ item }}"
+    mode: 0644
+  notify: restart netplan
+  loop: "{{ netplan_templates }}"
+- name: Delete cloud init network config file
+  file:
+    path: /etc/netplan/50-cloud-init.yaml
+    state: absent
+  notify: restart netplan
+- name: Flush handlers
+  meta: flush_handlers
+- name: Wait for connection
+  wait_for_connection:
+    delay: 10
+    timeout: 300
+- name: Gather facts about the interfaces
+  gather_facts:
+
+- name: Display information about the interface
+  debug:
+    var: ansible_interfaces

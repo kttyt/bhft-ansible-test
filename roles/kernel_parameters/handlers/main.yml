@@ -1,0 +1,9 @@
+---
+- name: Update grub file
+  command: grub-mkconfig -o /boot/grub/grub.cfg
+  listen: update grub
+- name: Reboot system
+  reboot:
+    reboot_timeout: 300
+    msg: "Reboot initiated by Ansible for kernel parameter change"
+  listen: update grub

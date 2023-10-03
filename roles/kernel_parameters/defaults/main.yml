@@ -1,0 +1,5 @@
+---
+cmdline_filename: "90-cmdlinux.cfg"
+cmdline_parameters:
+  - processor.max_cstate=1
+  - intel_idle.max_cstate=0

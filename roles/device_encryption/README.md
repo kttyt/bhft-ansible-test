@@ -1,12 +1,14 @@
-# Device Encryption Role
+Role Name: device_encryption
 =========
 
 Role for encrypting block devices using a key file and then mounting them.
 
-## Requirements
-- Host machine must have `cryptsetup` package installed.
+Requirements
+------------
+Host machine must have `cryptsetup` package installed.
 
-## Role Variables
+Role Variables
+--------------
 
 - `encrypted_volume_name`: The name of the resulting encrypted device.
 - `encrypted_volume_fstype`: Filesystem type, default is ext4.
@@ -16,13 +18,15 @@ Role for encrypting block devices using a key file and then mounting them.
 - `keyfile_content`: Encryption key, example usage `lookup('file', 'key_filename')`.
 - `mount_point`: Mount point for the encrypted device.
 
-## Dependencies
+Dependencies
+------------
 
 - Name: community.crypto
   Source: https://galaxy.ansible.com
   Version: 2.15.1
 
-## Example Playbook
+Example Playbook
+----------------
 
 ```yaml
 - hosts: database
@@ -35,3 +39,6 @@ Role for encrypting block devices using a key file and then mounting them.
         encrypt_device: /dev/sdb
         keyfile_content: "{{ lookup('file', 'db_disk.key') }}"
 ```
+This example demonstrates how to use the Device Encryption role to encrypt the disk /dev/sdb using the key file db_disk.key and mount the created filesystem on /mounts/db.
+
+Note: Please note that this role cannot be used multiple times in the same playbook due to the usage of named handlers.

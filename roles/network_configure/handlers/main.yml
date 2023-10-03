@@ -1,0 +1,7 @@
+---
+- name: Check netplan config
+  command: netplan generate
+  listen: restart netplan
+- name: Apply netplan config
+  command: netplan apply
+  listen: restart netplan

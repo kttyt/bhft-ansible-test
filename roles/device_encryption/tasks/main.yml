@@ -11,6 +11,7 @@
   file:
     path: "{{ keyfile_path | dirname }}"
     state: directory
+    mode: 0700
 
 - name: Add keyfile to remote host
   copy:
@@ -46,6 +47,7 @@
   file:
     path: "{{ mount_point }}"
     state: directory
+    mode: 0755
   when: mount_point | default("") | length > 0
 
 - name: Add encrypted disk to fstab
@@ -54,4 +56,4 @@
     line: "/dev/mapper/{{ encrypted_volume_name }}  {{ mount_point }}  {{ encrypted_volume_fstype }}  defaults  0  2"
     state: present
   when: mount_point | default("") | length > 0
-  notify: mount disks
+  notify: Mount disks

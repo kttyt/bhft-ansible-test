@@ -1,0 +1,7 @@
+---
+- name: Create grub file - {{ cmdline_filename }}
+  copy:
+    dest: "/etc/default/grub.d/{{ cmdline_filename }}"
+    content: "GRUB_CMDLINE_LINUX=\"{{ cmdline_parameters | join(' ') }}\""
+    mode: 0644
+  notify: update grub

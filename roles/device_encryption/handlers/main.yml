@@ -1,15 +1,15 @@
 ---
 # handlers file for disk_encryption
-- name: reload systemd daemons
+- name: Reload systemd daemons
   systemd_service:
     daemon_reload: yes
   listen: restart systemd-cryptsetup
 
-- name: restart systemd-cryptsetup@{{ encrypted_volume_name }}
+- name: Restart systemd-cryptsetup@{{ encrypted_volume_name }}
   systemd_service:
     name: systemd-cryptsetup@{{ encrypted_volume_name }}
     state: restarted
   listen: restart systemd-cryptsetup
 
-- name: mount disks
+- name: Mount disks
   command: mount -a
